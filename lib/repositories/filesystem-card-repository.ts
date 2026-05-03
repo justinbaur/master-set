@@ -13,8 +13,7 @@ import type {
 } from "@/lib/types/card";
 import { saveImage, deleteImageFile } from "@/lib/utils/file-upload";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const CARDS_FILE = path.join(DATA_DIR, "cards", "cards.json");
+const DEFAULT_DATA_DIR = path.join(process.cwd(), "data");
 
 interface CardJson {
   id: string;
@@ -53,14 +52,21 @@ function deserializeCard(json: CardJson): Card {
 }
 
 export class FilesystemCardRepository implements ICardRepository {
+  private readonly cardsFile: string;
+
+  constructor(dataDir?: string) {
+    const base = dataDir ?? DEFAULT_DATA_DIR;
+    this.cardsFile = path.join(base, "cards", "cards.json");
+  }
+
   private async ensureStorage(): Promise<void> {
-    await fs.mkdir(path.dirname(CARDS_FILE), { recursive: true });
+    await fs.mkdir(path.dirname(this.cardsFile), { recursive: true });
   }
 
   private async readCards(): Promise<Card[]> {
     await this.ensureStorage();
     try {
-      const raw = await fs.readFile(CARDS_FILE, "utf-8");
+      const raw = await fs.readFile(this.cardsFile, "utf-8");
       const data = JSON.parse(raw) as CardJson[];
 
       // Inline migration: assign default collectionId to any orphaned cards
@@ -71,7 +77,7 @@ export class FilesystemCardRepository implements ICardRepository {
         );
         await this.ensureStorage();
         await fs.writeFile(
-          CARDS_FILE,
+          this.cardsFile,
           JSON.stringify(migrated, null, 2),
           "utf-8"
         );
@@ -89,7 +95,7 @@ export class FilesystemCardRepository implements ICardRepository {
 
   private async writeCards(cards: Card[]): Promise<void> {
     await this.ensureStorage();
-    await fs.writeFile(CARDS_FILE, JSON.stringify(cards, null, 2), "utf-8");
+    await fs.writeFile(this.cardsFile, JSON.stringify(cards, null, 2), "utf-8");
   }
 
   async findAll(collectionId?: string): Promise<Card[]> {

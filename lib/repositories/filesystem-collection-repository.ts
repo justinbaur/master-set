@@ -9,9 +9,7 @@ import type {
 } from "@/lib/types/card";
 import { deleteImageFile } from "@/lib/utils/file-upload";
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const COLLECTIONS_FILE = path.join(DATA_DIR, "collections", "collections.json");
-const CARDS_FILE = path.join(DATA_DIR, "cards", "cards.json");
+const DEFAULT_DATA_DIR = path.join(process.cwd(), "data");
 
 // Stable ID for the auto-created Default collection
 export const DEFAULT_COLLECTION_ID = "00000000-0000-0000-0000-000000000001";
@@ -42,14 +40,23 @@ function deserialize(json: CollectionJson): Collection {
 }
 
 export class FilesystemCollectionRepository implements ICollectionRepository {
+  private readonly collectionsFile: string;
+  private readonly cardsFile: string;
+
+  constructor(dataDir?: string) {
+    const base = dataDir ?? DEFAULT_DATA_DIR;
+    this.collectionsFile = path.join(base, "collections", "collections.json");
+    this.cardsFile = path.join(base, "cards", "cards.json");
+  }
+
   private async ensureStorage(): Promise<void> {
-    await fs.mkdir(path.dirname(COLLECTIONS_FILE), { recursive: true });
+    await fs.mkdir(path.dirname(this.collectionsFile), { recursive: true });
   }
 
   private async readCollections(): Promise<Collection[]> {
     await this.ensureStorage();
     try {
-      const raw = await fs.readFile(COLLECTIONS_FILE, "utf-8");
+      const raw = await fs.readFile(this.collectionsFile, "utf-8");
       const data = JSON.parse(raw) as CollectionJson[];
       return data.map(deserialize);
     } catch (error) {
@@ -63,7 +70,7 @@ export class FilesystemCollectionRepository implements ICollectionRepository {
   private async writeCollections(collections: Collection[]): Promise<void> {
     await this.ensureStorage();
     await fs.writeFile(
-      COLLECTIONS_FILE,
+      this.collectionsFile,
       JSON.stringify(collections, null, 2),
       "utf-8"
     );
@@ -79,7 +86,7 @@ export class FilesystemCollectionRepository implements ICollectionRepository {
     // Read cards to check for orphans
     let rawCards: CardJson[] = [];
     try {
-      const raw = await fs.readFile(CARDS_FILE, "utf-8");
+      const raw = await fs.readFile(this.cardsFile, "utf-8");
       rawCards = JSON.parse(raw) as CardJson[];
     } catch {
       return collections; // No cards file yet — nothing to migrate
@@ -110,8 +117,8 @@ export class FilesystemCollectionRepository implements ICollectionRepository {
     const updated = rawCards.map((card) =>
       card.collectionId ? card : { ...card, collectionId: DEFAULT_COLLECTION_ID }
     );
-    await fs.mkdir(path.dirname(CARDS_FILE), { recursive: true });
-    await fs.writeFile(CARDS_FILE, JSON.stringify(updated, null, 2), "utf-8");
+    await fs.mkdir(path.dirname(this.cardsFile), { recursive: true });
+    await fs.writeFile(this.cardsFile, JSON.stringify(updated, null, 2), "utf-8");
 
     return result;
   }
@@ -170,7 +177,7 @@ export class FilesystemCollectionRepository implements ICollectionRepository {
 
     // Cascade: delete all cards in this collection
     try {
-      const raw = await fs.readFile(CARDS_FILE, "utf-8");
+      const raw = await fs.readFile(this.cardsFile, "utf-8");
       const allCards = JSON.parse(raw) as CardJson[];
       const toDelete = allCards.filter((c) => c.collectionId === id);
 
@@ -184,7 +191,7 @@ export class FilesystemCollectionRepository implements ICollectionRepository {
       }
 
       const remaining = allCards.filter((c) => c.collectionId !== id);
-      await fs.writeFile(CARDS_FILE, JSON.stringify(remaining, null, 2), "utf-8");
+      await fs.writeFile(this.cardsFile, JSON.stringify(remaining, null, 2), "utf-8");
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     }
