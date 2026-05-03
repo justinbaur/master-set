@@ -1,0 +1,16 @@
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
+  images: {
+    formats: ["image/webp"],
+    deviceSizes: [640, 750, 828, 1080, 1200],
+  },
+  reactStrictMode: true,
+};
+
+export default nextConfig;
