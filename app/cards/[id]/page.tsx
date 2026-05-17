@@ -58,7 +58,7 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
         <div className="flex-1 min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight break-words">
+          <h1 className="font-display text-2xl font-bold tracking-[0.04em] break-words">
             {card.name}
           </h1>
           <div className="mt-2">

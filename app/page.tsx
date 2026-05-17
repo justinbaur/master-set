@@ -31,7 +31,7 @@ export default async function HomePage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-start justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Collections</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[0.05em] uppercase">My Collections</h1>
           <p className="text-muted-foreground mt-1">
             {collections.length === 0
               ? "Create your first collection to get started"
@@ -65,9 +65,9 @@ export default async function HomePage() {
               <Link
                 key={col.id}
                 href={`/collections/${col.id}`}
-                className="group block rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow"
+                className="group block rounded-xl border border-border bg-card p-6 shadow-md hover:border-primary/40 hover:shadow-[0_0_24px_oklch(0.75_0.16_82_/_0.18)] transition-all duration-300"
               >
-                <h2 className="text-lg font-semibold group-hover:underline mb-1">
+                <h2 className="text-lg font-semibold group-hover:text-primary transition-colors mb-1">
                   {col.name}
                 </h2>
                 {col.description && (

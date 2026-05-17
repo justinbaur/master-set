@@ -10,12 +10,12 @@ export async function Header() {
   ]);
 
   return (
-    <header className="border-b bg-white sticky top-0 z-10">
+    <header className="border-b border-border bg-card/90 backdrop-blur-sm sticky top-0 z-10">
       <div className="container mx-auto px-4 h-14 flex items-center gap-4">
         {/* Logo */}
         <Link
           href="/"
-          className="text-lg font-bold tracking-tight shrink-0"
+          className="font-display text-base font-bold tracking-[0.12em] uppercase shrink-0 text-primary hover:text-primary/80 transition-colors"
         >
           Master Set
         </Link>

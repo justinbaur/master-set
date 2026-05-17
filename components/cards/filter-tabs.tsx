@@ -13,7 +13,7 @@ const TABS = [
 
 export function FilterTabs({ baseUrl, currentFilter }: FilterTabsProps) {
   return (
-    <div className="flex gap-1 rounded-lg border bg-muted p-1 w-fit">
+    <div className="flex gap-1 rounded-lg border border-border bg-muted/60 p-1 w-fit">
       {TABS.map(({ label, value }) => {
         const isActive =
           currentFilter === value || (!currentFilter && value === undefined);
@@ -25,8 +25,8 @@ export function FilterTabs({ baseUrl, currentFilter }: FilterTabsProps) {
             className={[
               "rounded-md px-3 py-1 text-sm font-medium transition-colors",
               isActive
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent",
             ].join(" ")}
           >
             {label}

@@ -29,7 +29,7 @@ export async function CardGrid({ collectionId, filter }: CardGridProps) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center">
         <p className="text-4xl mb-4">🃏</p>
-        <h2 className="text-2xl font-semibold mb-2">{emptyMessage.heading}</h2>
+        <h2 className="font-display text-2xl font-bold tracking-wide mb-2">{emptyMessage.heading}</h2>
         <p className="text-muted-foreground mb-6">{emptyMessage.sub}</p>
         {!filter && (
           <Link href={`/collections/${collectionId}/cards/new`}>
