@@ -36,7 +36,7 @@ export async function createCard(
     const card = await repository.create(validation.data);
     revalidatePath("/");
     revalidatePath(`/collections/${card.collectionId}`);
-    redirect(`/cards/${card.id}`);
+    redirect(`/collections/${card.collectionId}`);
   } catch (error) {
     if ((error as Error).message === "NEXT_REDIRECT") throw error;
     console.error("Failed to create card:", error);

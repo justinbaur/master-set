@@ -3,7 +3,10 @@ import { put, head, BlobNotFoundError } from "@vercel/blob";
 export async function readBlobJson<T>(pathname: string): Promise<T | null> {
   try {
     const blob = await head(pathname);
-    const res = await fetch(blob.url, { cache: "no-store" });
+    const res = await fetch(blob.url, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     return res.json() as T;
   } catch (error) {
     if (error instanceof BlobNotFoundError) return null;
