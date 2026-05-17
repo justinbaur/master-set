@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getCollectionRepository } from "@/lib/repositories";
 import { CollectionNav } from "./collection-nav";
-import { auth, signOut } from "@/auth";
+import { UserBadge } from "./user-badge";
+import { auth } from "@/auth";
 
 export async function Header() {
   const [collections, session] = await Promise.all([
@@ -25,21 +26,13 @@ export async function Header() {
           <CollectionNav collections={collections} />
         </div>
 
-        {/* Sign-out */}
+        {/* User badge */}
         {session?.user && (
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/" });
-            }}
-          >
-            <button
-              type="submit"
-              className="hidden md:block text-sm text-muted-foreground hover:text-foreground shrink-0"
-            >
-              Sign out
-            </button>
-          </form>
+          <UserBadge
+            name={session.user.name}
+            email={session.user.email}
+            image={session.user.image}
+          />
         )}
       </div>
     </header>
