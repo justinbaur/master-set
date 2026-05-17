@@ -33,11 +33,13 @@ export async function saveImage(file: File, imageId: string): Promise<ImageUrls>
       access: "public",
       addRandomSuffix: false,
       contentType: file.type || "image/jpeg",
+      cacheControlMaxAge: 31536000,
     }),
     put(`images/thumbnails/${thumbnailFilename}`, thumbnailBuffer, {
       access: "public",
       addRandomSuffix: false,
       contentType: "image/webp",
+      cacheControlMaxAge: 31536000,
     }),
   ]);
 

@@ -1,11 +1,14 @@
-import { put, list } from "@vercel/blob";
+import { put, head, BlobNotFoundError } from "@vercel/blob";
 
 export async function readBlobJson<T>(pathname: string): Promise<T | null> {
-  const { blobs } = await list({ prefix: pathname, limit: 1 });
-  const match = blobs.find((b) => b.pathname === pathname);
-  if (!match) return null;
-  const res = await fetch(match.url, { cache: "no-store" });
-  return res.json() as T;
+  try {
+    const blob = await head(pathname);
+    const res = await fetch(blob.url, { cache: "no-store" });
+    return res.json() as T;
+  } catch (error) {
+    if (error instanceof BlobNotFoundError) return null;
+    throw error;
+  }
 }
 
 export async function writeBlobJson<T>(pathname: string, data: T): Promise<void> {
@@ -14,5 +17,6 @@ export async function writeBlobJson<T>(pathname: string, data: T): Promise<void>
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
+    cacheControlMaxAge: 60,
   });
 }
