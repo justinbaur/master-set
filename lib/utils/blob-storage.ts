@@ -12,6 +12,7 @@ export async function writeBlobJson<T>(pathname: string, data: T): Promise<void>
   await put(pathname, JSON.stringify(data, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json",
   });
 }

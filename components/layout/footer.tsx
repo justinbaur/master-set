@@ -1,7 +1,7 @@
 export function Footer() {
   return (
-    <footer className="border-t mt-auto py-6 text-center text-sm text-muted-foreground">
-      Master Set — Your trading card collection tracker
+    <footer className="border-t border-border mt-auto py-6 text-center text-xs text-muted-foreground tracking-widest uppercase">
+      Master Set &mdash; Trading Card Tracker
     </footer>
   );
 }
