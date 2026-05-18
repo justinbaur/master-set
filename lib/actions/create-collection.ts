@@ -31,7 +31,7 @@ export async function createCollection(
   try {
     const collection = await repository.create(validation.data);
     revalidatePath("/");
-    redirect(`/collections/${collection.id}`);
+    redirect(`/`);
   } catch (error) {
     if ((error as Error).message === "NEXT_REDIRECT") throw error;
     console.error("Failed to create collection:", error);
