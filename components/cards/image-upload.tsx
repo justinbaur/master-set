@@ -55,6 +55,23 @@ export function ImageUpload({
     return () => document.removeEventListener("paste", onPaste);
   }, [handleFile]);
 
+  const handlePasteFromClipboard = useCallback(async () => {
+    if (!navigator.clipboard?.read) return;
+    try {
+      const items = await navigator.clipboard.read();
+      for (const item of items) {
+        const imageType = item.types.find((t) => t.startsWith("image/"));
+        if (imageType) {
+          const blob = await item.getType(imageType);
+          handleFile(new File([blob], "pasted", { type: imageType }));
+          return;
+        }
+      }
+    } catch {
+      // Permission denied or no image in clipboard
+    }
+  }, [handleFile]);
+
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
@@ -87,6 +104,12 @@ export function ImageUpload({
           setIsDragging(true);
         }}
         onDragLeave={() => setIsDragging(false)}
+        onPaste={(e) => {
+          const item = Array.from(e.clipboardData?.items ?? []).find((i) =>
+            i.type.startsWith("image/")
+          );
+          if (item) handleFile(item.getAsFile());
+        }}
         className={[
           "relative border-2 border-dashed rounded-lg cursor-pointer transition-colors",
           isDragging
@@ -126,8 +149,18 @@ export function ImageUpload({
               {isDragging ? "Drop it here!" : "Click, drag & drop, or paste an image"}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              PNG, JPEG, or WebP — max 10 MB · Ctrl+V / ⌘V to paste
+              PNG, JPEG, or WebP — max 10 MB
             </p>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePasteFromClipboard();
+              }}
+              className="mt-3 text-xs px-3 py-1.5 rounded-md border border-border bg-background hover:bg-muted transition-colors"
+            >
+              Paste image from clipboard
+            </button>
           </div>
         )}
       </div>

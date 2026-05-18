@@ -164,6 +164,7 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
                     src={img.thumbnailUrl}
                     alt={img.caption ?? "Card photo"}
                     fill
+                    unoptimized
                     className="object-cover"
                     sizes="(max-width: 640px) 50vw, 33vw"
                   />
